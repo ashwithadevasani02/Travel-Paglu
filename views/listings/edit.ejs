@@ -3,7 +3,7 @@
 <script>
      let newCo = <%- JSON.stringify(listing.geometry.coordinates) %>;
     let newcoordinates = [newCo[1], newCo[0]];
-    updateLocation(newcoordinates);
+    updateLocation(newcoordinates)
 </script>
 <body>
   <div class="custom">
@@ -35,7 +35,7 @@
         <i>Previous Listing Image</i>
         <br>
         
-         <img src="<%=originalImageUrl %>" style="border-radius: 1rem;">
+         <img src="<%=originalImageUrl %>" style="border-radius: 1rem; width:400px">
     </div>
      <div class="mb-3 ">
         <label for="image" class="form-label"><i>Upload Image</i></label>

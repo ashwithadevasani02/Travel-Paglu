@@ -60,19 +60,68 @@ module.exports.postTheListing= async (req,res)=>{
    req.flash("success","New Listing Added");
    res.redirect("/listings");
 }
-module.exports.editTheListing=async (req,res)=>{
-    const {id}= req.params;
-    const editListing=req.body.listing;
-    const edit=await Listing.findByIdAndUpdate(id,{...editListing});
-    if(req.file){
-        const url=req.file.path;
-        const filename=req.file.filename;
-        edit.image={url,filename};
-        await edit.save();
+module.exports.editTheListing = async (req, res) => {
+    const { id } = req.params;
+    const updatedData = req.body.listing;
+
+    const listing = await Listing.findById(id);
+
+    if (!listing) {
+        req.flash("error", "Listing not found.");
+        return res.redirect("/listings");
     }
-    req.flash("success"," Listing Updated");
+
+    // Check if location changed before updating coordinates
+    if (updatedData.location && updatedData.location !== listing.location) {
+        try {
+            const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+                params: {
+                    q: updatedData.location,
+                    format: 'json',
+                    limit: 1
+                },
+                headers: {
+                    'User-Agent': 'TravelPaglu (ashdevasani02@email.com)'
+                }
+            });
+
+            const data = response.data[0];
+            if (data) {
+                listing.geometry = {
+                    type: "Point",
+                    coordinates: [parseFloat(data.lon), parseFloat(data.lat)]
+                };
+            } else {
+                req.flash("error", "Could not find coordinates for the updated location.");
+                return res.redirect(`/listings/${id}/edit`);
+            }
+        } catch (err) {
+            console.error("Error fetching coordinates during edit:", err.message);
+            req.flash("error", "Geolocation update failed.");
+            return res.redirect(`/listings/${id}/edit`);
+        }
+    }
+
+    // Update only fields from form (not overwriting the object)
+    listing.title = updatedData.title;
+    listing.description = updatedData.description;
+    listing.price = updatedData.price;
+    listing.location = updatedData.location;
+    listing.category = updatedData.category;
+    // Add any other specific fields like cs if needed: listing.cs = updatedData.cs;
+
+    if (req.file) {
+        listing.image = {
+            url: req.file.path,
+            filename: req.file.filename
+        };
+    }
+
+    await listing.save();
+
+    req.flash("success", "Listing Updated");
     res.redirect(`/listings/${id}`);
-}
+};
 module.exports.renderEditForm=async (req, res)=>{
     let {id}= req.params;
     let listing= await Listing.findById(id);
