@@ -1,4 +1,10 @@
 <% layout("/layouts/boilerplate") -%>
+<script src="/js/map.js"></script>
+<script>
+     let newCo = <%- JSON.stringify(listing.geometry.coordinates) %>;
+    let newcoordinates = [newCo[1], newCo[0]];
+    updateLocation(newcoordinates);
+</script>
 <body>
   <div class="custom">
      <div class="row">

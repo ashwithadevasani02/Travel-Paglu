@@ -6,3 +6,7 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 console.log(coordinates);
 var marker = L.marker(coordinates).addTo(map);
 marker.bindPopup("<p>Exact location will be shown after booking</p>").openPopup();
+function updateLocation(newcoordinates) {
+  marker.setLatLng(newcoordinates);    
+  map.setView(newcoordinates, 13);     
+}
