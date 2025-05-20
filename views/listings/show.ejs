@@ -75,12 +75,12 @@
       </form>
         <% } %>
     </div>
-   <% if(Array.isArray(listing.reviews) && listing.reviews.length > 0){ %>
+   <% if (listing.reviews && listing.reviews.length > 0) { %>
   <p class="col-6 offset-3"><b>All Reviews</b></p>
   <div class="row">
-    <% for(let review of listing.reviews){ %>
+    <% for (let review of listing.reviews) { %>
       <div class="card col-3 offset-3 mb-3 ">
-        <div class="card-body ">
+        <div class="card-body">
           <div class="card-title">@<%= review.author.username %></div>
           <p class="starability-result card-text" data-rating="<%= review.rating %>"></p>
           <p class="card-text"><%= review.comment %></p>
